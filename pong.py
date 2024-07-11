@@ -1,6 +1,7 @@
 # Pong by Lorand
 
 import pygame
+import random
 
 WIDTH = 800
 HEIGHT = 600
@@ -23,15 +24,39 @@ class Paddle(pygame.sprite.Sprite):
 		self.image = pygame.Surface((15, 100))
 		self.image.fill("white")
 		self.rect = self.image.get_rect()
-		if player == 1:
+		self.player = player
+		if self.player == 1:
 			self.x = 20
 		else:
 			self.x = WIDTH - 20
 		self.y = HEIGHT / 2
 		self.rect.center = (self.x, self.y)
 
+	def update(self):
+		if self.player == 1:
+			self.rect.y += joystick.get_axis(1) * 10
+		else:
+			self.rect.y += joystick.get_axis(3) * 10
+		if self.rect.bottom > HEIGHT:
+			self.rect.bottom = HEIGHT
+		if self.rect.top < 0:
+			self.rect.top = 0
 
+class Ball(pygame.sprite.Sprite):
+	def __init__(self):
+		pygame.sprite.Sprite.__init__(self)
+		self.image = pygame.Surface((15, 15))
+		self.image.fill("white")
+		self.rect = self.image.get_rect()
+		self.x = WIDTH / 2
+		self.y = HEIGHT / 2
+		self.rect.center = (self.x, self.y)
+		self.vx = random.uniform(6, 10) * random.choice([-1, 1])
+		self.vy = random.uniform(-4, 4)
 
+	def update(self):
+		self.rect.x += self.vx
+		self.rect.y += self.vy
 
 def draw_text(surf, text, size, x, y, align):
 	font_name = pygame.font.match_font("Comic Sans MS")
@@ -69,10 +94,12 @@ while running:
 				main_menu = False
 				
 				sprites_all = pygame.sprite.Group()
-				player1 = Paddle(1)
-				sprites_all.add(player1)
-				player2 = Paddle(2)
-				sprites_all.add(player2)
+				paddle1 = Paddle(1)
+				sprites_all.add(paddle1)
+				paddle2 = Paddle(2)
+				sprites_all.add(paddle2)
+				ball = Ball()
+				sprites_all.add(ball)
 				
 				score = (0, 0)
 
