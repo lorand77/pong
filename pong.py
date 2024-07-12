@@ -2,7 +2,6 @@
 
 import pygame
 import random
-import math
 
 WIDTH = 800
 HEIGHT = 600
@@ -96,6 +95,10 @@ class Ball(pygame.sprite.Sprite):
 			else:
 				self.x = WIDTH - 29
 			self.rect.centerx = self.x
+			if hits[0].y - self.y > 30:
+				self.vy -= random.uniform(2, 4)
+			if self.y - hits[0].y > 30:
+				self.vy += random.uniform(2, 4)
 
 	def update(self):
 		self.move()
