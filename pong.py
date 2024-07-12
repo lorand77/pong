@@ -34,9 +34,9 @@ class Paddle(pygame.sprite.Sprite):
 
 	def update(self):
 		if self.player == 1:
-			self.rect.y += joystick.get_axis(1) * 10
+			self.rect.y += joystick.get_axis(1) * 12
 		else:
-			self.rect.y += joystick.get_axis(3) * 10
+			self.rect.y += joystick.get_axis(3) * 12
 		if self.rect.bottom > HEIGHT:
 			self.rect.bottom = HEIGHT
 		if self.rect.top < 0:
