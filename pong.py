@@ -2,6 +2,7 @@
 
 import pygame
 import random
+import math
 
 WIDTH = 800
 HEIGHT = 600
@@ -53,10 +54,54 @@ class Ball(pygame.sprite.Sprite):
 		self.rect.center = (self.x, self.y)
 		self.vx = random.uniform(6, 10) * random.choice([-1, 1])
 		self.vy = random.uniform(-4, 4)
+		self.active = True
+
+	def move(self):
+		self.x += self.vx
+		self.y += self.vy
+		if self.y < 0:
+			self.y = -self.y
+			self.vy = -self.vy
+		if self.y > HEIGHT:
+			self.y = 2 * HEIGHT - self.y
+			self.vy = -self.vy
+		self.rect.center = (self.x, self.y)
+
+	def has_reached_endline(self):
+		if self.rect.right < 0 and self.active == True:
+			score[1] += 1
+			self.active = False
+			self.last_active_time = pygame.time.get_ticks()
+		if self.rect.left > WIDTH and self.active == True:
+			score[0] += 1
+			self.active = False
+			self.last_active_time = pygame.time.get_ticks()
+
+	def reactivate(self):
+		now = pygame.time.get_ticks()
+		if self.active == False and now - self.last_active_time > 1000:
+			self.active = True
+			self.x = WIDTH / 2
+			self.y = HEIGHT / 2
+			self.rect.center = (self.x, self.y)
+			self.vx = random.uniform(6, 10) * random.choice([-1, 1])
+			self.vy = random.uniform(-4, 4)
+
+	def touches_paddle(self):
+		hits = pygame.sprite.spritecollide(ball, sprites_paddles, dokill = False)
+		if hits:
+			self.vx = -self.vx
+			if hits[0].player == 1:
+				self.x = 29
+			else:
+				self.x = WIDTH - 29
+			self.rect.centerx = self.x
 
 	def update(self):
-		self.rect.x += self.vx
-		self.rect.y += self.vy
+		self.move()
+		self.has_reached_endline()
+		self.touches_paddle()
+		self.reactivate()
 
 def draw_text(surf, text, size, x, y, align):
 	font_name = pygame.font.match_font("Comic Sans MS")
@@ -71,7 +116,7 @@ def draw_text(surf, text, size, x, y, align):
 		text_rect.topleft = (x, y)
 	surf.blit(text_surf, text_rect)
 
-score = (0, 0)
+score = [0, 0]
 main_menu = True
 running = True
 
@@ -94,14 +139,17 @@ while running:
 				main_menu = False
 				
 				sprites_all = pygame.sprite.Group()
+				sprites_paddles = pygame.sprite.Group()
 				paddle1 = Paddle(1)
 				sprites_all.add(paddle1)
+				sprites_paddles.add(paddle1)
 				paddle2 = Paddle(2)
 				sprites_all.add(paddle2)
+				sprites_paddles.add(paddle2)
 				ball = Ball()
 				sprites_all.add(ball)
 				
-				score = (0, 0)
+				score = [0, 0]
 
 		clock.tick(FPS)
 
@@ -114,8 +162,6 @@ while running:
 				
 		if score[0] >= 10 or score[1] >= 10:
 			main_menu = True
-				
-
 		
 		screen.fill("black")
 		sprites_all.draw(screen)
