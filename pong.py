@@ -14,6 +14,9 @@ pygame.display.set_caption("Pong")
 clock = pygame.time.Clock()
 
 pygame.mixer.init()
+sound_wall = pygame.mixer.Sound("assets/pongblip_e5.wav")
+sound_mid_paddle = pygame.mixer.Sound("assets/pongblip_d5.wav")
+sound_edge_paddle = pygame.mixer.Sound("assets/pongblip_f5.wav")
 
 pygame.joystick.init()
 joystick = pygame.joystick.Joystick(0)
@@ -51,7 +54,7 @@ class Ball(pygame.sprite.Sprite):
 		self.x = WIDTH / 2
 		self.y = HEIGHT / 2
 		self.rect.center = (self.x, self.y)
-		self.vx = random.uniform(6, 10) * random.choice([-1, 1])
+		self.vx = random.uniform(7, 10) * random.choice([-1, 1])
 		self.vy = random.uniform(-4, 4)
 		self.active = True
 
@@ -61,9 +64,11 @@ class Ball(pygame.sprite.Sprite):
 		if self.y < 0:
 			self.y = -self.y
 			self.vy = -self.vy
+			sound_wall.play()
 		if self.y > HEIGHT:
 			self.y = 2 * HEIGHT - self.y
 			self.vy = -self.vy
+			sound_wall.play()
 		self.rect.center = (self.x, self.y)
 
 	def has_reached_endline(self):
@@ -83,7 +88,7 @@ class Ball(pygame.sprite.Sprite):
 			self.x = WIDTH / 2
 			self.y = HEIGHT / 2
 			self.rect.center = (self.x, self.y)
-			self.vx = random.uniform(6, 10) * random.choice([-1, 1])
+			self.vx = random.uniform(7, 10) * random.choice([-1, 1])
 			self.vy = random.uniform(-4, 4)
 
 	def touches_paddle(self):
@@ -96,9 +101,13 @@ class Ball(pygame.sprite.Sprite):
 				self.x = WIDTH - 29
 			self.rect.centerx = self.x
 			if hits[0].y - self.y > 30:
-				self.vy -= random.uniform(2, 4)
+				self.vy -= random.uniform(4, 6)
 			if self.y - hits[0].y > 30:
-				self.vy += random.uniform(2, 4)
+				self.vy += random.uniform(4, 6)
+			if abs(hits[0].y - self.y) > 30:
+				sound_edge_paddle.play()
+			else:
+				sound_mid_paddle.play()
 
 	def update(self):
 		self.move()
@@ -168,7 +177,7 @@ while running:
 		
 		screen.fill("black")
 		sprites_all.draw(screen)
-		draw_text(screen, f"{score[0]} - {score[1]}", 25, WIDTH / 2, 20, "center")
+		draw_text(screen, f"{score[0]} - {score[1]}", 55, WIDTH / 2, 35, "center")
 		pygame.display.flip()
 
 		clock.tick(FPS)
