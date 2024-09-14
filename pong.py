@@ -19,7 +19,8 @@ sound_mid_paddle = pygame.mixer.Sound("assets/pongblip_d5.wav")
 sound_edge_paddle = pygame.mixer.Sound("assets/pongblip_f5.wav")
 
 pygame.joystick.init()
-joystick = pygame.joystick.Joystick(0)
+joystick_1 = pygame.joystick.Joystick(0)
+joystick_2 = pygame.joystick.Joystick(1)
 
 class Paddle(pygame.sprite.Sprite):
 	def __init__(self, player):
@@ -37,9 +38,9 @@ class Paddle(pygame.sprite.Sprite):
 
 	def update(self):
 		if self.player == 1:
-			self.rect.y += joystick.get_axis(1) * 12
+			self.rect.y += joystick_1.get_axis(3) * 12
 		else:
-			self.rect.y += joystick.get_axis(3) * 12
+			self.rect.y += joystick_2.get_axis(3) * 12
 		if self.rect.bottom > HEIGHT:
 			self.rect.bottom = HEIGHT
 		if self.rect.top < 0:
