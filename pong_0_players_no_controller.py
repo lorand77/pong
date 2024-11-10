@@ -22,20 +22,20 @@ sound_edge_paddle = pygame.mixer.Sound("assets/pongblip_f5.wav")
 class Paddle(pygame.sprite.Sprite):
 	def __init__(self, player):
 		pygame.sprite.Sprite.__init__(self)
-		self.image = pygame.Surface((15, 100))
+		self.image = pygame.Surface((40, 100))
 		self.image.fill("white")
 		self.rect = self.image.get_rect()
 		self.player = player
 		if self.player == 1:
-			self.x = 20
+			self.x = 30
 		else:
-			self.x = WIDTH - 20
+			self.x = WIDTH - 30
 		self.y = HEIGHT / 2
 		self.rect.center = (self.x, self.y)
 
 	def update(self):
 		if self.player == 1:
-			self.rect.y = ball.y - 50 + ball.vy
+			self.rect.y = ball.y - 50 + ball.vy * 0.8
 		else:
 			self.rect.y = ball.y - 50 + ball.vy
 		if self.rect.bottom > HEIGHT:
@@ -98,9 +98,9 @@ class Ball(pygame.sprite.Sprite):
 		if hits:
 			self.vx = -self.vx
 			if hits[0].player == 1:
-				self.x = 29
+				self.x = 51
 			else:
-				self.x = WIDTH - 29
+				self.x = WIDTH - 51
 			self.rect.centerx = self.x
 			if hits[0].y - self.y > 30:
 				self.vy -= random.uniform(4, 6) * SPEEDUP
